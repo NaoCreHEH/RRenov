@@ -40,7 +40,7 @@ export default function Home() {
               </div>
             </div>
             <div className="hidden md:flex justify-center">
-              <img src="/logo-rr.svg" alt="Rommelaere Rénov" className="w-64 h-64" />
+              <img src="/imaeg2vector.svg" alt="Rommelaere Rénov" className="w-64 h-64" />
             </div>
           </div>
         </div>
