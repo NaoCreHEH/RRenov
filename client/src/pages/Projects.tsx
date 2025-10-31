@@ -30,10 +30,10 @@ export default function Projects() {
       "/projects/caisson/344cff99-3ed5-4074-a6bb-8fa83c1a4ff2.jpeg",
       "/projects/caisson/573a13f6-6f83-4d18-af0f-bf82797d4672.jpeg",
     ],
-    "Aménagement SuiteParentale": [
-      "/projects/suite-parentale/baa634e6-d0f9-479b-b82f-d576c6def737.jpeg",
-      "/projects/suite-parentale/1e9ca91f-cab6-4535-82e0-fd5a9d4dd1dd.jpeg",
-      "/projects/suite-parentale/2a30a5ec-f491-49f6-a7cd-2809a13eb7e8.jpeg",
+    "Aménagement Suite Parentale": [
+      "/projects/suiteparentale/baa634e6-d0f9-479b-b82f-d576c6def737.jpeg",
+      "/projects/suiteparentale/1e9ca91f-cab6-4535-82e0-fd5a9d4dd1dd.jpeg",
+      "/projects/suiteparentale/2a30a5ec-f491-49f6-a7cd-2809a13eb7e8.jpeg",
     ],
   };
 
