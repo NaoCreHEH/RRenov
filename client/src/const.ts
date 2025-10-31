@@ -3,7 +3,7 @@ export { COOKIE_NAME, ONE_YEAR_MS } from "@shared/const";
 export const APP_TITLE = import.meta.env.VITE_APP_TITLE || "Edes design";
 
 export const APP_LOGO =
-  import.meta.env.VITE_APP_LOGO || "/images/EDES.png";
+  import.meta.env.VITE_APP_LOGO || "/EDES.png";
 
 // Generate login URL at runtime so redirect URI reflects the current origin.
 export const getLoginUrl = () => {
