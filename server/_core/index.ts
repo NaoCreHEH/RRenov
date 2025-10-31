@@ -7,6 +7,7 @@ import { registerOAuthRoutes } from "./oauth";
 import { appRouter } from "../routers";
 import { createContext } from "./context";
 import { serveStatic, setupVite } from "./vite";
+import mysql from "mysql2/promise";
 
 function isPortAvailable(port: number): Promise<boolean> {
   return new Promise(resolve => {
@@ -56,7 +57,25 @@ async function startServer() {
   if (port !== preferredPort) {
     console.log(`Port ${preferredPort} is busy, using port ${port} instead`);
   }
+  // --- DIAGNOSTIC DB (temporaire) ---
 
+
+app.get("/__db", async (_req, res) => {
+  try {
+    const url = process.env.DATABASE_URL!;
+    // Masque le mot de passe dans les logs
+    console.log("DATABASE_URL:", url.replace(/:(.*?)@/, ":****@"));
+
+    const conn = await mysql.createConnection(url);
+    const [rows] = await conn.query("SELECT NOW() AS now");
+    await conn.end();
+
+    res.json({ ok: true, rows });
+  } catch (e: any) {
+    console.error("DB error:", e?.message || e);
+    res.status(500).json({ ok: false, error: String(e?.message || e) });
+  }
+});
   server.listen(port, () => {
     console.log(`Server running on http://localhost:${port}/`);
   });
