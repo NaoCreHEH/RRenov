@@ -15,7 +15,7 @@ export default function Navigation() {
     { label: "Contact", href: "/contact" },
   ];
 
-  const adminItem = { label: "Admin", href: "/login", icon: Settings };
+  const adminItem = { label: "Admin", href: "/admin", icon: Settings };
 
   return (
     <nav className="bg-white shadow-md sticky top-0 z-50">
