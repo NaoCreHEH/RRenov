@@ -1,5 +1,6 @@
 import { eq } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
+import mysql from "mysql2/promise";
 import { InsertUser, users, services, projects, contactInfo, projectImages, aboutContent, teamMembers, InsertService, InsertProject, InsertContactInfo, InsertProjectImage, InsertAboutContent, InsertTeamMember } from "../drizzle/schema";
 import { ENV } from './_core/env';
 
@@ -9,7 +10,24 @@ let _db: ReturnType<typeof drizzle> | null = null;
 export async function getDb() {
   if (!_db && process.env.DATABASE_URL) {
     try {
-      _db = drizzle(process.env.DATABASE_URL);
+      // Parse DATABASE_URL to extract connection parameters
+      const url = new URL(process.env.DATABASE_URL);
+      
+      // Create connection with SSL support for TiDB
+      const connection = await mysql.createConnection({
+        host: url.hostname,
+        port: parseInt(url.port) || 4000,
+        user: url.username,
+        password: url.password,
+        database: url.pathname.substring(1), // Remove leading '/'
+        ssl: {
+          minVersion: "TLSv1.2",
+          rejectUnauthorized: true,
+        },
+      });
+      
+      _db = drizzle(connection);
+      console.log("[Database] Connected successfully with SSL");
     } catch (error) {
       console.warn("[Database] Failed to connect:", error);
       _db = null;
@@ -254,4 +272,70 @@ export async function deleteTeamMember(id: number) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
   return db.delete(teamMembers).where(eq(teamMembers.id, id));
+}
+
+// Simple Auth User Functions
+export async function getUserByEmail(email: string) {
+  const db = await getDb();
+  if (!db) {
+    console.warn("[Database] Cannot get user: database not available");
+    return undefined;
+  }
+
+  const result = await db.select().from(users).where(eq(users.email, email)).limit(1);
+  return result.length > 0 ? result[0] : undefined;
+}
+
+export async function getUserById(id: number) {
+  const db = await getDb();
+  if (!db) {
+    console.warn("[Database] Cannot get user: database not available");
+    return undefined;
+  }
+
+  const result = await db.select().from(users).where(eq(users.id, id)).limit(1);
+  return result.length > 0 ? result[0] : undefined;
+}
+
+export async function createAdminUser(data: {
+  email: string;
+  password: string;
+  name: string;
+  role: string;
+}) {
+  const db = await getDb();
+  if (!db) {
+    console.warn("[Database] Cannot create admin user: database not available");
+    return;
+  }
+
+  await db.insert(users).values({
+    openId: `local-${Date.now()}`, // OpenID factice pour compatibilité
+    email: data.email,
+    password: data.password,
+    name: data.name,
+    role: data.role as "user" | "admin",
+    loginMethod: "local",
+    lastSignedIn: new Date(),
+  });
+}
+
+export async function updateUserPassword(userId: number, hashedPassword: string) {
+  const db = await getDb();
+  if (!db) {
+    console.warn("[Database] Cannot update password: database not available");
+    return;
+  }
+
+  await db.update(users).set({ password: hashedPassword }).where(eq(users.id, userId));
+}
+
+export async function updateUserLastSignIn(userId: number) {
+  const db = await getDb();
+  if (!db) {
+    console.warn("[Database] Cannot update last sign in: database not available");
+    return;
+  }
+
+  await db.update(users).set({ lastSignedIn: new Date() }).where(eq(users.id, userId));
 }
