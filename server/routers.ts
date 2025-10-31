@@ -64,6 +64,54 @@ export const appRouter = router({
         if (ctx.user?.role !== "admin") throw new Error("Unauthorized");
         return db.updateContactInfo(input);
       }),
+    
+    // Project Images
+    getProjectImages: publicProcedure.input(z.number()).query(({ input }) => db.getProjectImages(input)),
+    createProjectImage: protectedProcedure
+      .input(z.object({ projectId: z.number(), imageUrl: z.string(), order: z.number().optional() }))
+      .mutation(({ input, ctx }) => {
+        if (ctx.user?.role !== "admin") throw new Error("Unauthorized");
+        return db.createProjectImage(input);
+      }),
+    deleteProjectImage: protectedProcedure.input(z.number()).mutation(({ input, ctx }) => {
+      if (ctx.user?.role !== "admin") throw new Error("Unauthorized");
+      return db.deleteProjectImage(input);
+    }),
+    deleteProjectImages: protectedProcedure.input(z.number()).mutation(({ input, ctx }) => {
+      if (ctx.user?.role !== "admin") throw new Error("Unauthorized");
+      return db.deleteProjectImages(input);
+    }),
+    
+    // About Content
+    getAboutContent: publicProcedure.query(() => db.getAboutContent()),
+    getAboutContentBySection: publicProcedure.input(z.string()).query(({ input }) => db.getAboutContentBySection(input)),
+    upsertAboutContent: protectedProcedure
+      .input(z.object({ section: z.string(), title: z.string().optional(), content: z.string().optional() }))
+      .mutation(({ input, ctx }) => {
+        if (ctx.user?.role !== "admin") throw new Error("Unauthorized");
+        return db.upsertAboutContent(input);
+      }),
+    
+    // Team Members
+    getTeamMembers: publicProcedure.query(() => db.getTeamMembers()),
+    getTeamMemberById: publicProcedure.input(z.number()).query(({ input }) => db.getTeamMemberById(input)),
+    createTeamMember: protectedProcedure
+      .input(z.object({ name: z.string(), role: z.string().optional(), bio: z.string().optional(), imageUrl: z.string().optional(), order: z.number().optional() }))
+      .mutation(({ input, ctx }) => {
+        if (ctx.user?.role !== "admin") throw new Error("Unauthorized");
+        return db.createTeamMember(input);
+      }),
+    updateTeamMember: protectedProcedure
+      .input(z.object({ id: z.number(), name: z.string().optional(), role: z.string().optional(), bio: z.string().optional(), imageUrl: z.string().optional(), order: z.number().optional() }))
+      .mutation(({ input, ctx }) => {
+        if (ctx.user?.role !== "admin") throw new Error("Unauthorized");
+        const { id, ...data } = input;
+        return db.updateTeamMember(id, data);
+      }),
+    deleteTeamMember: protectedProcedure.input(z.number()).mutation(({ input, ctx }) => {
+      if (ctx.user?.role !== "admin") throw new Error("Unauthorized");
+      return db.deleteTeamMember(input);
+    }),
   }),
 });
 

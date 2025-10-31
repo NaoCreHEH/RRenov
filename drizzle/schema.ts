@@ -56,6 +56,33 @@ export const projects = mysqlTable("projects", {
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
 });
 
+export const projectImages = mysqlTable("projectImages", {
+  id: int("id").autoincrement().primaryKey(),
+  projectId: int("projectId").notNull(),
+  imageUrl: text("imageUrl").notNull(),
+  order: int("order").default(0),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+export const aboutContent = mysqlTable("aboutContent", {
+  id: int("id").autoincrement().primaryKey(),
+  section: varchar("section", { length: 100 }).notNull().unique(),
+  title: varchar("title", { length: 255 }),
+  content: text("content"),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export const teamMembers = mysqlTable("teamMembers", {
+  id: int("id").autoincrement().primaryKey(),
+  name: varchar("name", { length: 255 }).notNull(),
+  role: varchar("role", { length: 255 }),
+  bio: text("bio"),
+  imageUrl: text("imageUrl"),
+  order: int("order").default(0),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
 export const contactInfo = mysqlTable("contactInfo", {
   id: int("id").autoincrement().primaryKey(),
   phone: varchar("phone", { length: 20 }),
@@ -70,5 +97,11 @@ export type Service = typeof services.$inferSelect;
 export type InsertService = typeof services.$inferInsert;
 export type Project = typeof projects.$inferSelect;
 export type InsertProject = typeof projects.$inferInsert;
+export type ProjectImage = typeof projectImages.$inferSelect;
+export type InsertProjectImage = typeof projectImages.$inferInsert;
+export type AboutContent = typeof aboutContent.$inferSelect;
+export type InsertAboutContent = typeof aboutContent.$inferInsert;
+export type TeamMember = typeof teamMembers.$inferSelect;
+export type InsertTeamMember = typeof teamMembers.$inferInsert;
 export type ContactInfo = typeof contactInfo.$inferSelect;
 export type InsertContactInfo = typeof contactInfo.$inferInsert;

@@ -1,6 +1,6 @@
 import { eq } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
-import { InsertUser, users, services, projects, contactInfo, InsertService, InsertProject, InsertContactInfo } from "../drizzle/schema";
+import { InsertUser, users, services, projects, contactInfo, projectImages, aboutContent, teamMembers, InsertService, InsertProject, InsertContactInfo, InsertProjectImage, InsertAboutContent, InsertTeamMember } from "../drizzle/schema";
 import { ENV } from './_core/env';
 
 let _db: ReturnType<typeof drizzle> | null = null;
@@ -170,4 +170,88 @@ export async function updateContactInfo(data: Partial<InsertContactInfo>) {
   } else {
     return db.insert(contactInfo).values(data as InsertContactInfo);
   }
+}
+
+// Project Images queries
+export async function getProjectImages(projectId: number) {
+  const db = await getDb();
+  if (!db) return [];
+  return db.select().from(projectImages).where(eq(projectImages.projectId, projectId)).orderBy(projectImages.order);
+}
+
+export async function createProjectImage(data: InsertProjectImage) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  const result = await db.insert(projectImages).values(data);
+  return result;
+}
+
+export async function deleteProjectImage(id: number) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  return db.delete(projectImages).where(eq(projectImages.id, id));
+}
+
+export async function deleteProjectImages(projectId: number) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  return db.delete(projectImages).where(eq(projectImages.projectId, projectId));
+}
+
+// About Content queries
+export async function getAboutContent() {
+  const db = await getDb();
+  if (!db) return [];
+  return db.select().from(aboutContent);
+}
+
+export async function getAboutContentBySection(section: string) {
+  const db = await getDb();
+  if (!db) return undefined;
+  const result = await db.select().from(aboutContent).where(eq(aboutContent.section, section)).limit(1);
+  return result.length > 0 ? result[0] : undefined;
+}
+
+export async function upsertAboutContent(data: InsertAboutContent) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  const existing = await getAboutContentBySection(data.section);
+  if (existing) {
+    return db.update(aboutContent).set(data).where(eq(aboutContent.section, data.section));
+  } else {
+    return db.insert(aboutContent).values(data);
+  }
+}
+
+// Team Members queries
+export async function getTeamMembers() {
+  const db = await getDb();
+  if (!db) return [];
+  return db.select().from(teamMembers).orderBy(teamMembers.order);
+}
+
+export async function getTeamMemberById(id: number) {
+  const db = await getDb();
+  if (!db) return undefined;
+  const result = await db.select().from(teamMembers).where(eq(teamMembers.id, id)).limit(1);
+  return result.length > 0 ? result[0] : undefined;
+}
+
+export async function createTeamMember(data: InsertTeamMember) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  const result = await db.insert(teamMembers).values(data);
+  return result;
+}
+
+export async function updateTeamMember(id: number, data: Partial<InsertTeamMember>) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  return db.update(teamMembers).set(data).where(eq(teamMembers.id, id));
+}
+
+export async function deleteTeamMember(id: number) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  return db.delete(teamMembers).where(eq(teamMembers.id, id));
 }
