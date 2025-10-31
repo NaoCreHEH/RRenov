@@ -4,7 +4,6 @@ services:
     env: node
     plan: free
     region: frankfurt
-    nodeVersion: 20
     buildCommand: |
       corepack enable
       pnpm install --frozen-lockfile
