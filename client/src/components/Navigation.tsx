@@ -1,7 +1,7 @@
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { APP_LOGO, APP_TITLE } from "@/const";
-import { Menu, X } from "lucide-react";
+import { Menu, X, Settings } from "lucide-react";
 import { useState } from "react";
 
 export default function Navigation() {
@@ -14,6 +14,8 @@ export default function Navigation() {
     { label: "Réalisations", href: "/projects" },
     { label: "Contact", href: "/contact" },
   ];
+
+  const adminItem = { label: "Admin", href: "/admin", icon: Settings };
 
   return (
     <nav className="bg-white shadow-md sticky top-0 z-50">
@@ -35,6 +37,13 @@ export default function Navigation() {
               </Button>
             </Link>
           ))}
+          {/* Admin Link */}
+          <Link href={adminItem.href}>
+            <Button variant="ghost" className="text-foreground hover:text-primary flex items-center gap-2">
+              <Settings size={18} />
+              {adminItem.label}
+            </Button>
+          </Link>
         </div>
 
         {/* Mobile Menu Button */}
@@ -62,6 +71,17 @@ export default function Navigation() {
                 </Button>
               </Link>
             ))}
+            {/* Admin Link Mobile */}
+            <Link href={adminItem.href}>
+              <Button
+                variant="ghost"
+                className="w-full justify-start text-foreground hover:text-primary flex items-center gap-2"
+                onClick={() => setIsOpen(false)}
+              >
+                <Settings size={18} />
+                {adminItem.label}
+              </Button>
+            </Link>
           </div>
         </div>
       )}
