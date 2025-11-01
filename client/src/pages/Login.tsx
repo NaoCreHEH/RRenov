@@ -13,16 +13,28 @@ export default function Login() {
   let cancelled = false;
   (async () => {
     try {
-      const res = await fetch("/api/auth/me", { method: "GET" });
-      if (!cancelled && res.ok) {
+      const res = await fetch("/api/auth/me", {
+        method: "GET",
+        // credentials: "include", // utile si cookie cross-site
+      });
+      if (cancelled) return;
+
+      if (!res.ok) return; // 401 -> pas connecté, on laisse l'utilisateur taper
+
+      const me = await res.json();
+      //  Ne redirige que si un user existe (ou un flag 'authenticated')
+      if (me && (me.user || me.authenticated || me.id || me.role)) {
         const params = new URLSearchParams(window.location.search);
         const next = params.get("next") || "/admin";
         setLocation(next);
       }
-    } catch {}
+    } catch {
+      /* ignore */
+    }
   })();
   return () => { cancelled = true; };
 }, [setLocation]);
+
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -50,10 +62,18 @@ export default function Login() {
         // Rediriger vers l'admin
         //setTimeout(() => {
          // window.location.href = "/admin";
-         const params = new URLSearchParams(window.location.search);
-         const next = params.get("next") || "/admin";
-         setLocation(next); // ← pas de setTimeout, pas de window.location
-        return ; 
+          try {
+                const meRes = await fetch("/api/auth/me", { method: "GET" });
+                if (meRes.ok) {
+                  const params = new URLSearchParams(window.location.search);
+                  const next = params.get("next") || "/admin";
+                  setLocation(next);
+                  return;
+                }
+  } catch {}
+  // fallback: on navigue quand même
+  setLocation("/admin");
+  return;
  //       }, 500);
       } else {
         toast.error(data.error || "Erreur de connexion");
