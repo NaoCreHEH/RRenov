@@ -13,8 +13,10 @@ export default function Login() {
   let cancelled = false;
   (async () => {
     try {
-      const res = await fetch("/api/auth/me", {
-        method: "GET",
+     const res = await fetch("/api/auth/me", {
+  method: "GET",
+  credentials: "include",         
+
         // credentials: "include", // utile si cookie cross-site
       });
       if (cancelled) return;
@@ -52,9 +54,13 @@ export default function Login() {
         headers: {
           "Content-Type": "application/json",
         },
+        credentials: "include",     
         body: JSON.stringify({ email, password }),
       });
-
+      const meRes = await fetch("/api/auth/me", {
+          method: "GET",
+          credentials: "include",               
+        });
       const data = await response.json();
 
       if (response.ok) {
