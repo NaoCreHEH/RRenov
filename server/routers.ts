@@ -4,11 +4,27 @@ import { systemRouter } from "./_core/systemRouter";
 import { publicProcedure, protectedProcedure, router } from "./_core/trpc";
 import { z } from "zod";
 import * as db from "./db";
+import { TRPCError } from "@trpc/server"; 
+
 
 export const appRouter = router({
   system: systemRouter,
   auth: router({
-    me: publicProcedure.query(opts => opts.ctx.user),
+   // me: publicProcedure.query(opts => opts.ctx.user),
+
+    me: publicProcedure.query(({ ctx }) => {
+  // empêcher le 304
+  ctx.res?.setHeader?.("Cache-Control", "no-store, no-cache, must-revalidate, proxy-revalidate");
+  ctx.res?.setHeader?.("Pragma", "no-cache");
+  ctx.res?.setHeader?.("Expires", "0");
+  ctx.res?.app?.set?.("etag", false);
+
+  if (!ctx.user) {
+    throw new TRPCError({ code: "UNAUTHORIZED" });
+  }
+  return { user: ctx.user };
+}),
+
     logout: publicProcedure.mutation(({ ctx }) => {
       const cookieOptions = getSessionCookieOptions(ctx.req);
       ctx.res.clearCookie(COOKIE_NAME, { ...cookieOptions, maxAge: -1 });
