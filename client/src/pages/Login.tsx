@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState , useEffect} from "react";
 import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
@@ -8,6 +8,21 @@ export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+  let cancelled = false;
+  (async () => {
+    try {
+      const res = await fetch("/api/auth/me", { method: "GET" });
+      if (!cancelled && res.ok) {
+        const params = new URLSearchParams(window.location.search);
+        const next = params.get("next") || "/admin";
+        setLocation(next);
+      }
+    } catch {}
+  })();
+  return () => { cancelled = true; };
+}, [setLocation]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -33,9 +48,13 @@ export default function Login() {
       if (response.ok) {
         toast.success("Connexion réussie !");
         // Rediriger vers l'admin
-        setTimeout(() => {
-          window.location.href = "/admin";
-        }, 500);
+        //setTimeout(() => {
+         // window.location.href = "/admin";
+         const params = new URLSearchParams(window.location.search);
+         const next = params.get("next") || "/admin";
+         setLocation(next); // ← pas de setTimeout, pas de window.location
+        return ; 
+ //       }, 500);
       } else {
         toast.error(data.error || "Erreur de connexion");
       }
