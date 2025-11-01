@@ -6,6 +6,7 @@ import AdminServices from "./AdminServices";
 import AdminProjects from "./AdminProjects";
 import AdminContact from "./AdminContact";
 import { trpc } from "@/lib/trpc";
+import AdminProjectsEnhanced from "./AdminProjectsEnhanced";
 
 export default function AdminDashboard() {
   const [, setLocation] = useLocation();
@@ -77,7 +78,7 @@ export default function AdminDashboard() {
           {/* Tab Content */}
           <div className="bg-white rounded-lg p-8">
             {activeTab === "services" && <AdminServices />}
-            {activeTab === "projects" && <AdminProjects />}
+            {activeTab === "projects" && <AdminProjectsEnhanced />}
             {activeTab === "contact" && <AdminContact />}
           </div>
         </div>
