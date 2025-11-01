@@ -3,7 +3,7 @@ import { drizzle } from "drizzle-orm/mysql2";
 import mysql from "mysql2/promise";
 import { InsertUser, users, services, projects, contactInfo, projectImages, aboutContent, teamMembers, InsertService, InsertProject, InsertContactInfo, InsertProjectImage, InsertAboutContent, InsertTeamMember } from "../drizzle/schema";
 import { ENV } from './_core/env';
-
+import { Testimonial, testimonials, InsertTestimonial } from "drizzle/schema";
 let _db: ReturnType<typeof drizzle> | null = null;
 
 // Lazily create the drizzle instance so local tooling can run without a DB.
@@ -329,7 +329,53 @@ export async function updateUserPassword(userId: number, hashedPassword: string)
 
   await db.update(users).set({ password: hashedPassword }).where(eq(users.id, userId));
 }
+// Ajouter à la fin du fichier, avant le dernier export
 
+export async function getTestimonials() {
+  const db = await getDb();
+  if (!db) return [];
+  
+  return await db
+    .select()
+    .from(testimonials)
+    .where(eq(testimonials.isPublished, true))
+    .orderBy(asc(testimonials.order));
+}
+
+export async function getAllTestimonials() {
+  const db = await getDb();
+  if (!db) return [];
+  
+  return await db.select().from(testimonials).orderBy(asc(testimonials.order));
+}
+
+export async function createTestimonial(data: InsertTestimonial) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  await db.insert(testimonials).values(data);
+}
+
+export async function updateTestimonial(id: number, data: Partial<InsertTestimonial>) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  await db.update(testimonials).set(data).where(eq(testimonials.id, id));
+}
+
+export async function deleteTestimonial(id: number) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  await db.delete(testimonials).where(eq(testimonials.id, id));
+}
+
+export async function toggleTestimonialPublished(id: number, isPublished: boolean) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  await db.update(testimonials).set({ isPublished }).where(eq(testimonials.id, id));
+}
 export async function updateUserLastSignIn(userId: number) {
   const db = await getDb();
   if (!db) {

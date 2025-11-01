@@ -1,4 +1,5 @@
-import { int, mysqlEnum, mysqlTable, text, timestamp, varchar } from "drizzle-orm/mysql-core";
+import { int, mysqlEnum, mysqlTable, text, tinyint, timestamp, varchar } from "drizzle-orm/mysql-core";
+import { boolean } from "zod";
 
 /**
  * Core user table backing auth flow.
@@ -91,6 +92,37 @@ export const contactInfo = mysqlTable("contactInfo", {
   address: text("address"),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
 });
+
+export const testimonials = mysqlTable("testimonials", {
+  id: int("id").autoincrement().primaryKey(),
+  clientName: varchar("clientName", { length: 255 }).notNull(),
+  clientRole: varchar("clientRole", { length: 255 }),
+  projectType: varchar("projectType", { length: 255 }),
+  content: text("content").notNull(),
+  rating: int("rating").default(5),
+  imageUrl: varchar("imageUrl", { length: 512 }),
+  // ⚠ 'order' est un mot réservé SQL — renomme
+  displayOrder: int("displayOrder").default(0),
+
+  // booléen en MySQL via tinyint(1)
+  isPublished: tinyint("isPublished", { unsigned: true })
+    .notNull()
+    .default(1)
+    .$type<boolean>(),
+
+  createdAt: timestamp("createdAt", { mode: "string" })
+    .default(sql`CURRENT_TIMESTAMP`)
+    .notNull(),
+
+  // si ta version supporte onUpdateNow(), remets-le ; sinon mets à jour en code
+  updatedAt: timestamp("updatedAt", { mode: "string" })
+    .default(sql`CURRENT_TIMESTAMP`)
+    .notNull(),
+});
+
+
+export type Testimonial = typeof testimonials.$inferSelect;
+export type InsertTestimonial = typeof testimonials.$inferInsert;
 
 export type Page = typeof pages.$inferSelect;
 export type InsertPage = typeof pages.$inferInsert;
