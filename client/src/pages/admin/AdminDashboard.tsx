@@ -1,24 +1,36 @@
 import Navigation from "@/components/Navigation";
 import { Button } from "@/components/ui/button";
-import { useAuth } from "@/_core/hooks/useAuth";
 import { useLocation } from "wouter";
 import { useEffect, useState } from "react";
 import AdminServices from "./AdminServices";
 import AdminProjects from "./AdminProjects";
 import AdminContact from "./AdminContact";
+import { trpc } from "@/lib/trpc";
 
 export default function AdminDashboard() {
-  const { user, isAuthenticated } = useAuth();
   const [, setLocation] = useLocation();
   const [activeTab, setActiveTab] = useState("services");
 
-  useEffect(() => {
-    if (!isAuthenticated || user?.role !== "admin") {
-      setLocation("/login");
-    }
-  }, [isAuthenticated, user, setLocation]);
+  // ⬇️ Source de vérité : auth.me (tRPC)
+  const me = trpc.auth.me.useQuery(undefined, {
+    retry: false,
+    refetchOnWindowFocus: false,
+  });
 
-  if (!isAuthenticated || user?.role !== "admin") {
+  useEffect(() => {
+    if (me.isLoading) return;
+    // si non authentifié → UNAUTHORIZED => on renvoie vers /login
+    if (me.error) {
+      setLocation("/login?next=/admin");
+    }
+  }, [me.isLoading, me.error, setLocation]);
+
+  if (me.isLoading) {
+    return <div className="p-6">Chargement…</div>;
+  }
+
+  // sécurité : si pas de user malgré tout, ne rien rendre
+  if (!me.data?.user) {
     return null;
   }
 
