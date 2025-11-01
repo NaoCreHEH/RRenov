@@ -1,4 +1,4 @@
-import { useState , useEffect} from "react";
+import { useState } from "react";
 import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
@@ -8,24 +8,6 @@ export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
-
- useEffect(() => {
-  (async () => {
-    try {
-      const res = await fetch("/api/auth/me", {
-        method: "GET",
-        credentials: "include",
-        cache: "no-store",
-      });
-      if (!res.ok) return;
-      const params = new URLSearchParams(window.location.search);
-      const next = params.get("next") || "/admin";
-      setLocation(next);
-    } catch {}
-  })();
-}, [setLocation]);
-
-
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -43,38 +25,27 @@ export default function Login() {
         headers: {
           "Content-Type": "application/json",
         },
-        credentials: "include",     
+        credentials: "include",   // 🔸important : cookies envoyés
         body: JSON.stringify({ email, password }),
       });
-    
+
       const data = await response.json();
 
- if (!response.ok) {
-      toast.error(data.error || "Erreur de connexion");
-      return;
+      if (response.ok) {
+        toast.success("Connexion réussie !");
+        // ✅ on force un vrai rechargement de la page → évite le clignotement
+        const next = new URLSearchParams(window.location.search).get("next") || "/admin";
+        window.location.replace(next); // 👈 recharge l'app et relit le token
+        return;
+      } else {
+        toast.error(data.error || "Erreur de connexion");
+      }
+    } catch (error) {
+      toast.error("Erreur de connexion au serveur");
+    } finally {
+      setLoading(false);
     }
-
-    toast.success("Connexion réussie !");
-
-    // Valider l'état d'auth juste après (anti-cache côté client)
-    const meRes = await fetch("/api/auth/me", {
-      method: "GET",
-      credentials: "include",
-      cache: "no-store",               // ⬅️ important
-    });
-
-    // On redirige quoi qu'il arrive, mais /me devrait être 200 si tout est ok
-    const params = new URLSearchParams(window.location.search);
-    const next = params.get("next") || "/admin";
-    // wouter SPA
-    setLocation(next);
-
-  } catch {
-    toast.error("Erreur de connexion au serveur");
-  } finally {
-    setLoading(false);
-  }
-};
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50">
