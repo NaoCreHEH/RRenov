@@ -3,9 +3,9 @@ import { Button } from "@/components/ui/button";
 import { useAuth } from "@/_core/hooks/useAuth";
 import { useLocation } from "wouter";
 import { useEffect, useState } from "react";
-import AdminServices from "./AdminServices";
+import AdminServices from "./admin/AdminServices";
 import AdminProjectsEnhanced from "./AdminProjectsEnhanced";
-import AdminContact from "./AdminContact";
+import AdminContact from "./admin/AdminContact";
 import AdminAbout from "./AdminAbout";
 
 export default function AdminDashboard() {
