@@ -12,12 +12,15 @@ export default function AdminDashboard() {
   const { user, isAuthenticated } = useAuth();
   const [, setLocation] = useLocation();
   const [activeTab, setActiveTab] = useState("services");
+  const isLoading = user === undefined;
 
-  useEffect(() => {
-    if (!isAuthenticated || user?.role !== "admin") {
-      setLocation("/login");
-    }
-  }, [isAuthenticated, user, setLocation]);
+useEffect(() => {
+  if (isLoading) return; // on attend d'avoir la vraie info
+  if (!isAuthenticated || user?.role !== "admin") {
+    setLocation("/login");
+  }
+}, [isLoading, isAuthenticated, user, setLocation]);
+
 
   if (!isAuthenticated || user?.role !== "admin") {
     return null;
