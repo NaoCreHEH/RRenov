@@ -9,22 +9,33 @@ export default function Login() {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
 
- useEffect(() => {
+  useEffect(() => {
+  let cancelled = false;
   (async () => {
     try {
-      const res = await fetch("/api/auth/me", {
-        method: "GET",
-        credentials: "include",
-        cache: "no-store",
-      });
-      if (!res.ok) return;
-      const params = new URLSearchParams(window.location.search);
-      const next = params.get("next") || "/admin";
-      setLocation(next);
-    } catch {}
-  })();
-}, [setLocation]);
+     const res = await fetch("/api/auth/me", {
+  method: "GET",
+  credentials: "include",         
 
+        // credentials: "include", // utile si cookie cross-site
+      });
+      if (cancelled) return;
+
+      if (!res.ok) return; // 401 -> pas connecté, on laisse l'utilisateur taper
+
+      const me = await res.json();
+      //  Ne redirige que si un user existe (ou un flag 'authenticated')
+      if (me && (me.user || me.authenticated || me.id || me.role)) {
+        const params = new URLSearchParams(window.location.search);
+        const next = params.get("next") || "/admin";
+        setLocation(next);
+      }
+    } catch {
+      /* ignore */
+    }
+  })();
+  return () => { cancelled = true; };
+}, [setLocation]);
 
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -46,35 +57,39 @@ export default function Login() {
         credentials: "include",     
         body: JSON.stringify({ email, password }),
       });
-    
+      const meRes = await fetch("/api/auth/me", {
+          method: "GET",
+          credentials: "include",               
+        });
       const data = await response.json();
 
- if (!response.ok) {
-      toast.error(data.error || "Erreur de connexion");
-      return;
+      if (response.ok) {
+        toast.success("Connexion réussie !");
+        // Rediriger vers l'admin
+        //setTimeout(() => {
+         // window.location.href = "/admin";
+          try {
+                const meRes = await fetch("/api/auth/me", { method: "GET" });
+                if (meRes.ok) {
+                  const params = new URLSearchParams(window.location.search);
+                  const next = params.get("next") || "/admin";
+                  setLocation(next);
+                  return;
+                }
+  } catch {}
+  // fallback: on navigue quand même
+  setLocation("/admin");
+  return;
+ //       }, 500);
+      } else {
+        toast.error(data.error || "Erreur de connexion");
+      }
+    } catch (error) {
+      toast.error("Erreur de connexion au serveur");
+    } finally {
+      setLoading(false);
     }
-
-    toast.success("Connexion réussie !");
-
-    // Valider l'état d'auth juste après (anti-cache côté client)
-    const meRes = await fetch("/api/auth/me", {
-      method: "GET",
-      credentials: "include",
-      cache: "no-store",               // ⬅️ important
-    });
-
-    // On redirige quoi qu'il arrive, mais /me devrait être 200 si tout est ok
-    const params = new URLSearchParams(window.location.search);
-    const next = params.get("next") || "/admin";
-    // wouter SPA
-    setLocation(next);
-
-  } catch {
-    toast.error("Erreur de connexion au serveur");
-  } finally {
-    setLoading(false);
-  }
-};
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50">
