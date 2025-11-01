@@ -123,16 +123,16 @@ export default function AdminProjectsEnhanced() {
 
   return (
     <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-bold text-primary">Gérer les Réalisations</h2>
-        {!isAdding && !editingId && !managingImagesId && (
-          <Button onClick={() => setIsAdding(true)} className="bg-accent text-white">
-            <Plus size={20} className="mr-2" />
-            Ajouter une Réalisation
-          </Button>
-        )}
-      </div>
-
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+          <h2 className="text-2xl font-bold text-primary">Gérer les Réalisations</h2>
+          {!isAdding && !editingId && !managingImagesId && (
+            <Button onClick={() => setIsAdding(true)} className="bg-accent text-white w-full sm:w-auto">
+              <Plus size={20} className="mr-2" />
+              Ajouter une Réalisation
+            </Button>
+          )}
+        </div>
+      
       {/* Manage Images Modal */}
       {managingImagesId && (
         <div className="bg-white p-6 rounded-lg border-2 border-primary shadow-lg">
@@ -150,19 +150,19 @@ export default function AdminProjectsEnhanced() {
           {/* Add New Image */}
           <div className="mb-6 p-4 bg-gray-50 rounded-lg">
             <label className="block text-sm font-medium mb-2">Ajouter une image</label>
-            <div className="flex gap-2">
-              <input
-                type="url"
-                value={newImageUrl}
-                onChange={(e) => setNewImageUrl(e.target.value)}
-                className="flex-1 px-4 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
-                placeholder="/projects/nom-projet/image.jpg"
-              />
-              <Button onClick={handleAddImage} className="bg-primary text-white">
-                <Plus size={16} className="mr-2" />
-                Ajouter
-              </Button>
-            </div>
+                <div className="flex flex-col sm:flex-row gap-2">
+                  <input
+                    type="url"
+                    value={newImageUrl}
+                    onChange={(e) => setNewImageUrl(e.target.value)}
+                    className="flex-1 min-w-0 px-4 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+                    placeholder="/projects/nom-projet/image.jpg"
+                  />
+                  <Button onClick={handleAddImage} className="bg-primary text-white w-full sm:w-auto">
+                    <Plus size={16} className="mr-2" />
+                    Ajouter
+                  </Button>
+                </div>
             <p className="text-xs text-foreground/60 mt-2">
               💡 Astuce: Placez vos images dans /client/public/projects/ et utilisez le chemin relatif
             </p>
@@ -274,10 +274,10 @@ export default function AdminProjectsEnhanced() {
                   <h3 className="text-lg font-bold text-primary mb-2">{project.title}</h3>
                   <p className="text-foreground/80 mb-2">{project.description}</p>
                   {project.imageUrl && (
-                    <p className="text-sm text-foreground/60">Image principale: {project.imageUrl}</p>
+                    <p className="text-sm text-foreground/60 break-all">Image principale: {project.imageUrl}</p>
                   )}
                 </div>
-                <div className="flex gap-2 ml-4">
+                <div className="flex  gap-2 ml-0 sm:ml-4 flex-wrap">
                   <Button
                     size="sm"
                     variant="outline"
