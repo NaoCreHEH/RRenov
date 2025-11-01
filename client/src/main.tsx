@@ -18,9 +18,7 @@ const redirectToLoginIfUnauthorized = (error: unknown) => {
 
   if (!isUnauthorized) return;
 
- if (window.location.pathname === "/login") return;
-
-  window.location.href = getLoginUrl(); // /login?next=...
+  window.location.href = getLoginUrl();
 };
 
 queryClient.getQueryCache().subscribe(event => {
@@ -48,7 +46,6 @@ const trpcClient = trpc.createClient({
         return globalThis.fetch(input, {
           ...(init ?? {}),
           credentials: "include",
-          cache: "no-store", 
         });
       },
     }),
