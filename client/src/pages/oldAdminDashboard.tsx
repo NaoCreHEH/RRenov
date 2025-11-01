@@ -9,29 +9,17 @@ import AdminContact from "./admin/AdminContact";
 import AdminAbout from "./AdminAbout";
 
 export default function AdminDashboard() {
-  const { user, isAuthenticated, loading } = useAuth({
-  redirectOnUnauthenticated: false,
-});
-
+  const { user, isAuthenticated } = useAuth();
   const [, setLocation] = useLocation();
   const [activeTab, setActiveTab] = useState("services");
   const isLoading = user === undefined;
 
 useEffect(() => {
-  if (loading) return; // attendre la fin du chargement du user
+  if (isLoading) return; // on attend d'avoir la vraie info
   if (!isAuthenticated || user?.role !== "admin") {
-    console.log("Redirection vers /login (non authentifié ou non admin)");
     setLocation("/login");
   }
-}, [loading, isAuthenticated, user, setLocation]);
-
-if (loading) {
-  return (
-    <div className="flex items-center justify-center h-screen">
-      <p>Chargement des informations d’authentification...</p>
-    </div>
-  );
-}
+}, [isLoading, isAuthenticated, user, setLocation]);
 
 
   if (!isAuthenticated || user?.role !== "admin") {
