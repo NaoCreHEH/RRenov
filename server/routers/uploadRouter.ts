@@ -2,7 +2,7 @@
 import { z } from "zod";
 import { protectedProcedure, router } from "../_core/trpc";
 import { nanoid } from "nanoid";
-import { projects } from "@/drizzle/schema";
+import { projects } from "../drizzle/schema";
 import { eq } from "drizzle-orm";
 
 // Ce routeur gère l'enregistrement de l'URL de l'image dans la base de données
