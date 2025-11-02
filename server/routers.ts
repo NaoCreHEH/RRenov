@@ -1,6 +1,7 @@
 import { COOKIE_NAME } from "@shared/const";
 import { getSessionCookieOptions } from "./_core/cookies";
 import { systemRouter } from "./_core/systemRouter";
+import { uploadRouter } from "./routers/uploadRouter";
 import { publicProcedure, protectedProcedure, router } from "./_core/trpc";
 import { z } from "zod";
 import * as db from "./db";
@@ -8,6 +9,7 @@ import { TRPCError } from "@trpc/server";
 
 
 export const appRouter = router({
+  sytem : uploadRouter,
   system: systemRouter,
   auth: router({
    // me: publicProcedure.query(opts => opts.ctx.user),

@@ -1,10 +1,15 @@
 import Navigation from "@/components/Navigation";
 import { Button } from "@/components/ui/button";
 import { Link } from "wouter";
+import SeoHelmet from "@/components/SeoHelmet"; 
 
 export default function About() {
   return (
     <div className="min-h-screen flex flex-col bg-white">
+         <SeoHelmet // NOUVEAU
+        title="Spécialiste Aménagement de Combles et Rénovation"
+        description="Entrepreneur spécialisé en aménagement de combles, Gyproc, enduit et retouche sur plafonnage. Demandez votre devis gratuit."
+      />
       <Navigation />
 
       {/* Header */}

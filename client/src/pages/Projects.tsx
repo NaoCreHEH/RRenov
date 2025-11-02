@@ -1,6 +1,7 @@
 import Navigation from "@/components/Navigation";
 import ImageCarousel from "@/components/ImageCarousel";
 import { trpc } from "@/lib/trpc";
+import SeoHelmet from "@/components/SeoHelmet"; 
 
 export default function Projects() {
   const { data: projects, isLoading } = trpc.content.getProjects.useQuery();
@@ -39,6 +40,10 @@ export default function Projects() {
 
   return (
     <div className="min-h-screen flex flex-col bg-white">
+         <SeoHelmet // NOUVEAU
+        title="Spécialiste Aménagement de Combles et Rénovation"
+        description="Entrepreneur spécialisé en aménagement de combles, Gyproc, enduit et retouche sur plafonnage. Demandez votre devis gratuit."
+      />
       <Navigation />
 
       {/* Header */}

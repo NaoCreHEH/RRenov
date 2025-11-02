@@ -3,6 +3,7 @@ import Navigation from "@/components/Navigation";
 import { Link } from "wouter";
 import { Phone, Mail, MapPin } from "lucide-react";
 import { trpc } from "@/lib/trpc";
+import SeoHelmet from "@/components/SeoHelmet"; 
 
 export default function Home() {
   const { data: contactInfo } = trpc.content.getContactInfo.useQuery();
@@ -10,6 +11,10 @@ export default function Home() {
 
   return (
     <div className="min-h-screen flex flex-col bg-white">
+         <SeoHelmet // NOUVEAU
+        title="Spécialiste Aménagement de Combles et Rénovation"
+        description="Entrepreneur spécialisé en aménagement de combles, Gyproc, enduit et retouche sur plafonnage. Demandez votre devis gratuit."
+      />
       <Navigation />
 
       {/* Hero Section */}
