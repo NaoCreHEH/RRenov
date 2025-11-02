@@ -1,5 +1,8 @@
 import "dotenv/config";
 import express from "express";
+import multer from "multer";
+import path from "path"; 
+import { nanoid } from "nanoid"; 
 import cookieParser from "cookie-parser";
 import { createServer } from "http";
 import net from "net";
@@ -9,6 +12,7 @@ import { appRouter } from "../routers";
 import { createContext } from "./contextSimple";
 import { serveStatic, setupVite } from "./vite";
 import mysql from "mysql2/promise";
+
 
 function isPortAvailable(port: number): Promise<boolean> {
   return new Promise(resolve => {
@@ -36,6 +40,29 @@ async function startServer() {
   app.use(express.json({ limit: "50mb" }));
   app.use(express.urlencoded({ limit: "50mb", extended: true }));
   app.use(cookieParser());
+
+  // --- Upload Endpoint ---
+  const uploadDir = path.join(process.cwd(), "client", "public", "uploads");
+  const storage = multer.diskStorage({
+    destination: (_req: any, file: any, cb: (arg0: null, arg1: string) => void) => {
+      cb(null, uploadDir);
+    },
+    filename: (_req: any, file: { originalname: string; }, cb: (arg0: null, arg1: string) => void) => {
+      const ext = path.extname(file.originalname);
+      const filename = nanoid() + ext;
+      cb(null, filename);
+    },
+  });
+  const upload = multer({ storage: storage });
+
+  app.post("/api/upload", upload.single("file"), (req, res) => {
+    if (!req.file) {
+      return res.status(400).json({ success: false, message: "No file uploaded" });
+    }
+    // Le chemin d'accès public est /uploads/nom_du_fichier
+    const publicPath = `/uploads/${req.file.filename}`;
+    res.json({ success: true, url: publicPath });
+  });
   // Simple Auth routes
   registerSimpleAuthRoutes(app);
   // Initialize admin user
