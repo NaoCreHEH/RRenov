@@ -45,7 +45,7 @@ export default function Testimonials() {
                 >
                   {/* Rating */}
                   <div className="flex gap-1 mb-4">
-                    {renderStars(Number(testimonial.rating) || 5)}
+                    {renderStars(testimonial.rating || 5)}
                   </div>
 
                   {/* Quote */}

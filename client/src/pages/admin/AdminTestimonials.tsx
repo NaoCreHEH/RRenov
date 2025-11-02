@@ -246,7 +246,7 @@ export default function AdminTestimonials() {
         <p>Chargement des témoignages...</p>
       ) : (
         <div className="space-y-4">
-          {testimonials?.map((testimonial) => (
+          {testimonials?.map((testimonial: typeof testimonials[number]) => (
             <div
               key={testimonial.id}
               className="p-4 border rounded-lg shadow-sm flex justify-between items-start bg-white"

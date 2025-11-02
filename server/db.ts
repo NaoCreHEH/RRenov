@@ -1,4 +1,4 @@
-import { eq } from "drizzle-orm";
+import { asc, eq } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
 import mysql from "mysql2/promise";
 import { InsertUser, users, services, projects, contactInfo, projectImages, aboutContent, teamMembers, testimonials, InsertService, InsertProject, InsertContactInfo, InsertProjectImage, InsertAboutContent, InsertTeamMember, InsertTestimonial } from "../drizzle/schema";
@@ -367,54 +367,6 @@ export async function updateUserPassword(userId: number, hashedPassword: string)
 
   await db.update(users).set({ password: hashedPassword }).where(eq(users.id, userId));
 }
-
-///testimonials
-export async function getTestimonials() {
-  const db = await getDb();
-  if (!db) return [];
-  
-  return await db
-    .select()
-    .from(testimonials)
-    .where(eq(testimonials.isPublished, true))
-    .orderBy(asc(testimonials.displayOrder));
-}
-
-export async function getAllTestimonials() {
-  const db = await getDb();
-  if (!db) return [];
-  
-  return await db.select().from(testimonials).orderBy(asc(testimonials.displayOrder));
-}
-
-export async function createTestimonial(data: InsertTestimonial) {
-  const db = await getDb();
-  if (!db) throw new Error("Database not available");
-  
-  await db.insert(testimonials).values(data);
-}
-
-export async function updateTestimonial(id: number, data: Partial<InsertTestimonial>) {
-  const db = await getDb();
-  if (!db) throw new Error("Database not available");
-  
-  await db.update(testimonials).set(data).where(eq(testimonials.id, id));
-}
-
-export async function deleteTestimonial(id: number) {
-  const db = await getDb();
-  if (!db) throw new Error("Database not available");
-  
-  await db.delete(testimonials).where(eq(testimonials.id, id));
-}
-
-export async function toggleTestimonialPublished(id: number, isPublished: boolean) {
-  const db = await getDb();
-  if (!db) throw new Error("Database not available");
-  
-  await db.update(testimonials).set({ isPublished: isPublished ? 1 : 0 }).where(eq(testimonials.id, id));
-}
-
 
 export async function updateUserLastSignIn(userId: number) {
   const db = await getDb();

@@ -1,5 +1,6 @@
-import { int, mysqlEnum, mysqlTable, text, tinyint, timestamp, varchar } from "drizzle-orm/mysql-core";
+import { int, mysqlEnum, mysqlTable, text, tinyint, timestamp, varchar,boolean as mysqlBool } from "drizzle-orm/mysql-core";
 import { boolean } from "zod";
+
 
 /**
  * Core user table backing auth flow.
@@ -103,7 +104,7 @@ export const testimonials = mysqlTable("testimonials", {
   rating: int("rating").default(5),
   imageUrl: varchar("imageUrl", { length: 512 }),
   order: int("order").default(0),
-  isPublished: boolean("isPublished").default(true),
+  isPublished: mysqlBool("isPublished").default(true),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
 });
