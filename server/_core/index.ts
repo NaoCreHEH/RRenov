@@ -9,9 +9,18 @@ import { appRouter } from "../routers";
 import { createContext } from "./contextSimple";
 import { serveStatic, setupVite } from "./vite";
 import mysql from "mysql2/promise";
-import multer from "multer";
+import multer, { type File as MulterFile } from "multer";
 import path from "path"; // NOUVEAU
 import { nanoid } from "nanoid"; // NOUVEAU
+
+// Extend Express Request type to include multer file
+declare global {
+  namespace Express {
+    interface Request {
+      file?: MulterFile;
+    }
+  }
+}
 
 function isPortAvailable(port: number): Promise<boolean> {
   return new Promise(resolve => {
@@ -43,10 +52,10 @@ async function startServer() {
   // --- Upload Endpoint ---
   const uploadDir = path.join(process.cwd(), "client", "public", "uploads");
   const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
+    destination: (_req: any, file: any, cb: (arg0: null, arg1: string) => void) => {
       cb(null, uploadDir);
     },
-    filename: (req, file, cb) => {
+    filename: (_req: any, file: { originalname: string; }, cb: (arg0: null, arg1: string) => void) => {
       const ext = path.extname(file.originalname);
       const filename = nanoid() + ext;
       cb(null, filename);

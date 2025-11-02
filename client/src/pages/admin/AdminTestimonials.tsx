@@ -15,7 +15,7 @@ interface TestimonialFormData {
   projectType: string;
   imageUrl: string;
   isPublished: boolean;
-  displayOrder: number;
+  order: number;
 }
 
 const initialFormData: TestimonialFormData = {
@@ -26,7 +26,7 @@ const initialFormData: TestimonialFormData = {
   projectType: "",
   imageUrl: "",
   isPublished: true,
-  displayOrder: 0,
+  order: 0,
 };
 
 export default function AdminTestimonials() {
@@ -35,7 +35,7 @@ export default function AdminTestimonials() {
   const [loading, setLoading] = useState(false);
 
   // Utiliser getAll pour récupérer tous les témoignages (publiés ou non)
-  const { data: testimonials, isLoading, refetch } = trpc.testimonials.getAll.useQuery();
+  const { data: testimonials, isLoading, refetch } = trpc.testimonials.list.useQuery();
   const createMutation = trpc.testimonials.create.useMutation();
   const updateMutation = trpc.testimonials.update.useMutation();
   const deleteMutation = trpc.testimonials.delete.useMutation();
@@ -49,7 +49,7 @@ export default function AdminTestimonials() {
             ...prev,
             [name]: (e.target as HTMLInputElement).checked,
         }));
-    } else if (name === "rating" || name === "displayOrder") {
+    } else if (name === "rating" || name === "order") {
         setFormData((prev) => ({
             ...prev,
             [name]: parseInt(value) || 0,
@@ -77,7 +77,7 @@ export default function AdminTestimonials() {
         // Drizzle utilise 1 ou 0 pour les tinyint, mais le routeur tRPC attend un boolean
         isPublished: formData.isPublished, 
         rating: formData.rating,
-        displayOrder: formData.displayOrder,
+        order: formData.order,
       };
 
       if (isEditing !== null) {
@@ -98,7 +98,7 @@ export default function AdminTestimonials() {
     }
   };
 
-  const handleEdit = (testimonial: typeof testimonials[number]) => {
+  const handleEdit = (testimonial: NonNullable<typeof testimonials>[number]) => {
     setIsEditing(testimonial.id);
     setFormData({
       clientName: testimonial.clientName || "",
@@ -107,8 +107,8 @@ export default function AdminTestimonials() {
       clientRole: testimonial.clientRole || "",
       projectType: testimonial.projectType || "",
       imageUrl: testimonial.imageUrl || "",
-      isPublished: testimonial.isPublished === 1, // Drizzle renvoie 1 ou 0 pour tinyint
-      displayOrder: testimonial.displayOrder || 0,
+      isPublished: testimonial.isPublished ?? true,
+      order: testimonial.order || 0,
     });
   };
 
@@ -178,10 +178,10 @@ export default function AdminTestimonials() {
             onChange={handleChange}
             />
             <Input
-                name="displayOrder"
+                name="order"
                 type="number"
                 placeholder="Ordre d'affichage (0 par défaut)"
-                value={formData.displayOrder}
+                value={formData.order}
                 onChange={handleChange}
             />
             <div className="flex items-center space-x-2">
@@ -246,7 +246,7 @@ export default function AdminTestimonials() {
         <p>Chargement des témoignages...</p>
       ) : (
         <div className="space-y-4">
-          {testimonials?.map((testimonial: typeof testimonials[number]) => (
+          {testimonials?.map((testimonial: NonNullable<typeof testimonials>[number]) => (
             <div
               key={testimonial.id}
               className="p-4 border rounded-lg shadow-sm flex justify-between items-start bg-white"
@@ -261,7 +261,7 @@ export default function AdminTestimonials() {
                   {testimonial.clientRole} - {testimonial.projectType}
                 </p>
                 <div className="flex items-center space-x-2 pt-2">
-                  {testimonial.isPublished === 1 ? (
+                  {testimonial.isPublished ? (
                     <span className="flex items-center text-green-600 text-xs font-medium">
                       <Check size={14} className="mr-1" /> Publié
                     </span>
@@ -292,10 +292,10 @@ export default function AdminTestimonials() {
                 <Button
                   variant="secondary"
                   size="icon"
-                  onClick={() => handleTogglePublished(testimonial.id, testimonial.isPublished !== 1)}
-                  title={testimonial.isPublished === 1 ? "Masquer" : "Publier"}
+                  onClick={() => handleTogglePublished(testimonial.id, !testimonial.isPublished)}
+                  title={testimonial.isPublished ? "Masquer" : "Publier"}
                 >
-                  {testimonial.isPublished === 1 ? <EyeOff size={16} /> : <Eye size={16} />}
+                  {testimonial.isPublished ? <EyeOff size={16} /> : <Eye size={16} />}
                 </Button>
               </div>
             </div>
