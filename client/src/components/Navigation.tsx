@@ -30,7 +30,7 @@ export default function Navigation() {
         </Link>
 
         {/* Desktop Navigation */}
-        <div className="hidden md:flex items-center gap-1">
+        <div className="hidden lg:flex items-center gap-1">
           {navItems.map((item) => (
             <Link key={item.href} href={item.href}>
               <Button variant="ghost" className="text-foreground hover:text-primary">
