@@ -7,6 +7,8 @@ import AdminProjects from "./AdminProjects";
 import AdminContact from "./AdminContact";
 import { trpc } from "@/lib/trpc";
 import AdminProjectsEnhanced from "./AdminProjectsEnhanced";
+import AdminTestimonials from "./AdminTestimonials";
+import AdminAbout from "./AdminAbout";
 
 export default function AdminDashboard() {
   const [, setLocation] = useLocation();
@@ -66,12 +68,26 @@ export default function AdminDashboard() {
             >
               Réalisations
             </Button>
+                 <Button
+              variant={activeTab === "about" ? "default" : "ghost"}
+              onClick={() => setActiveTab("about")}
+              className={activeTab === "about" ? "bg-primary text-white" : ""}
+            >
+              À Propos
+            </Button>
             <Button
               variant={activeTab === "contact" ? "default" : "ghost"}
               onClick={() => setActiveTab("contact")}
               className={activeTab === "contact" ? "bg-primary text-white" : ""}
             >
               Contact
+            </Button>
+                  <Button
+              variant={activeTab === "testimonials" ? "default" : "ghost"}
+              onClick={() => setActiveTab("testimonials")}
+              className={activeTab === "testimonials" ? "bg-primary text-white" : ""}
+            >
+              Témoignages
             </Button>
           </div>
 
@@ -80,6 +96,8 @@ export default function AdminDashboard() {
             {activeTab === "services" && <AdminServices />}
             {activeTab === "projects" && <AdminProjectsEnhanced />}
             {activeTab === "contact" && <AdminContact />}
+            {activeTab === "about" && <AdminAbout />}
+            {activeTab === "testimonials" && <AdminTestimonials />}
           </div>
         </div>
       </section>
