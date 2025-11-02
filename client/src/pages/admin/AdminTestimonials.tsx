@@ -1,307 +1,308 @@
-import { trpc } from "@/lib/trpc";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { trpc } from "@/lib/trpc";
+import { Trash2, Edit2, Plus, Eye, EyeOff } from "lucide-react";
 import { toast } from "sonner";
-import { Check, X, Star, Trash2, Edit, Plus, Eye, EyeOff } from "lucide-react";
-
-// Le type Testimonial est défini dans le schéma Drizzle, mais nous le redéfinissons ici pour le formulaire
-interface TestimonialFormData {
-  clientName: string;
-  content: string;
-  rating: number;
-  clientRole: string;
-  projectType: string;
-  imageUrl: string;
-  isPublished: boolean;
-  order: number;
-}
-
-const initialFormData: TestimonialFormData = {
-  clientName: "",
-  content: "",
-  rating: 5,
-  clientRole: "",
-  projectType: "",
-  imageUrl: "",
-  isPublished: true,
-  order: 0,
-};
 
 export default function AdminTestimonials() {
-  const [formData, setFormData] = useState<TestimonialFormData>(initialFormData);
-  const [isEditing, setIsEditing] = useState<number | null>(null);
-  const [loading, setLoading] = useState(false);
-
-  // Utiliser getAll pour récupérer tous les témoignages (publiés ou non)
-  const { data: testimonials, isLoading, refetch } = trpc.testimonials.list.useQuery();
+  const { data: testimonials, refetch } = trpc.testimonials.listAll.useQuery();
   const createMutation = trpc.testimonials.create.useMutation();
   const updateMutation = trpc.testimonials.update.useMutation();
   const deleteMutation = trpc.testimonials.delete.useMutation();
-  const togglePublishedMutation = trpc.testimonials.togglePublished.useMutation();
+  const toggleMutation = trpc.testimonials.togglePublished.useMutation();
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-    const { name, value, type } = e.target;
-    
-    if (type === "checkbox") {
-        setFormData((prev) => ({
-            ...prev,
-            [name]: (e.target as HTMLInputElement).checked,
-        }));
-    } else if (name === "rating" || name === "order") {
-        setFormData((prev) => ({
-            ...prev,
-            [name]: parseInt(value) || 0,
-        }));
-    } else {
-        setFormData((prev) => ({
-            ...prev,
-            [name]: value,
-        }));
-    }
-  };
+  const [isAdding, setIsAdding] = useState(false);
+  const [editingId, setEditingId] = useState<number | null>(null);
+  const [formData, setFormData] = useState({
+    clientName: "",
+    clientRole: "",
+    projectType: "",
+    content: "",
+    rating: 5,
+    imageUrl: "",
+    order: 0,
+  });
 
-  const handleRatingChange = (rating: number) => {
-    setFormData((prev) => ({ ...prev, rating }));
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-
-    try {
-      // Préparer les données pour la mutation
-      const dataToSave = {
-        ...formData,
-        // Drizzle utilise 1 ou 0 pour les tinyint, mais le routeur tRPC attend un boolean
-        isPublished: formData.isPublished, 
-        rating: formData.rating,
-        order: formData.order,
-      };
-
-      if (isEditing !== null) {
-        await updateMutation.mutateAsync({ id: isEditing, ...dataToSave });
-        toast.success("Témoignage mis à jour avec succès !");
-      } else {
-        await createMutation.mutateAsync(dataToSave);
-        toast.success("Témoignage créé avec succès !");
-      }
-      setFormData(initialFormData);
-      setIsEditing(null);
-      refetch();
-    } catch (error) {
-      toast.error("Erreur lors de l'opération.");
-      console.error(error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleEdit = (testimonial: NonNullable<typeof testimonials>[number]) => {
-    setIsEditing(testimonial.id);
+  const handleAddNew = () => {
+    setIsAdding(true);
+    setEditingId(null);
     setFormData({
-      clientName: testimonial.clientName || "",
-      content: testimonial.content || "",
-      rating: testimonial.rating || 5,
+      clientName: "",
+      clientRole: "",
+      projectType: "",
+      content: "",
+      rating: 5,
+      imageUrl: "",
+      order: 0,
+    });
+  };
+
+  const handleEdit = (testimonial: any) => {
+    setEditingId(testimonial.id);
+    setIsAdding(true);
+    setFormData({
+      clientName: testimonial.clientName,
       clientRole: testimonial.clientRole || "",
       projectType: testimonial.projectType || "",
+      content: testimonial.content,
+      rating: testimonial.rating || 5,
       imageUrl: testimonial.imageUrl || "",
-      isPublished: testimonial.isPublished ?? true,
       order: testimonial.order || 0,
     });
   };
 
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    try {
+      if (editingId) {
+        await updateMutation.mutateAsync({
+          id: editingId,
+          ...formData,
+        });
+        toast.success("Témoignage modifié avec succès");
+      } else {
+        await createMutation.mutateAsync(formData);
+        toast.success("Témoignage créé avec succès");
+      }
+
+      setIsAdding(false);
+      setEditingId(null);
+      refetch();
+    } catch (error) {
+      toast.error("Erreur lors de la sauvegarde");
+    }
+  };
+
   const handleDelete = async (id: number) => {
-    if (window.confirm("Êtes-vous sûr de vouloir supprimer ce témoignage ?")) {
+    if (confirm("Êtes-vous sûr de vouloir supprimer ce témoignage ?")) {
       try {
         await deleteMutation.mutateAsync({ id });
-        toast.success("Témoignage supprimé.");
+        toast.success("Témoignage supprimé");
         refetch();
       } catch (error) {
-        toast.error("Erreur lors de la suppression.");
+        toast.error("Erreur lors de la suppression");
       }
     }
   };
 
   const handleTogglePublished = async (id: number, isPublished: boolean) => {
     try {
-      await togglePublishedMutation.mutateAsync({ id, isPublished });
-      toast.success(`Témoignage ${isPublished ? "publié" : "masqué"}.`);
+      await toggleMutation.mutateAsync({
+        id,
+        isPublished: !isPublished,
+      });
       refetch();
     } catch (error) {
-      toast.error("Erreur lors de la mise à jour.");
+      toast.error("Erreur lors de la mise à jour");
     }
   };
 
-  const renderStars = (rating: number) => {
-    return Array.from({ length: 5 }).map((_, i) => (
-      <Star
-        key={i}
-        size={16}
-        className={i < rating ? "fill-yellow-400 text-yellow-400" : "text-gray-300"}
-      />
-    ));
-  };
-
   return (
-    <div className="space-y-8">
-      <h2 className="text-2xl font-bold text-primary">
-        {isEditing !== null ? "Modifier le Témoignage" : "Ajouter un Nouveau Témoignage"}
-      </h2>
-
-      <form onSubmit={handleSubmit} className="space-y-4 p-6 border rounded-lg bg-gray-50">
-        <div className="grid md:grid-cols-2 gap-4">
-            <Input
-            name="clientName"
-            placeholder="Nom du client *"
-            value={formData.clientName}
-            onChange={handleChange}
-            required
-            />
-            <Input
-            name="clientRole"
-            placeholder="Rôle ou titre du client (ex: Propriétaire)"
-            value={formData.clientRole}
-            onChange={handleChange}
-            />
-            <Input
-            name="projectType"
-            placeholder="Type de projet (ex: Rénovation de cuisine)"
-            value={formData.projectType}
-            onChange={handleChange}
-            />
-            <Input
-            name="imageUrl"
-            placeholder="URL de l'image du client (Optionnel)"
-            value={formData.imageUrl}
-            onChange={handleChange}
-            />
-            <Input
-                name="order"
-                type="number"
-                placeholder="Ordre d'affichage (0 par défaut)"
-                value={formData.order}
-                onChange={handleChange}
-            />
-            <div className="flex items-center space-x-2">
-                <label className="text-sm font-medium">Note (sur 5) :</label>
-                <select
-                    name="rating"
-                    value={formData.rating}
-                    onChange={handleChange}
-                    className="border border-gray-300 rounded-lg p-2"
-                >
-                    {[1, 2, 3, 4, 5].map((n) => (
-                        <option key={n} value={n}>
-                            {n} étoile{n > 1 ? "s" : ""}
-                        </option>
-                    ))}
-                </select>
-            </div>
-        </div>
-        
-        <Textarea
-          name="content"
-          placeholder="Contenu du témoignage *"
-          value={formData.content}
-          onChange={handleChange}
-          required
-        />
-        
-        <div className="flex items-center space-x-2">
-          <input
-            type="checkbox"
-            id="isPublished"
-            name="isPublished"
-            checked={formData.isPublished}
-            onChange={handleChange}
-            className="h-4 w-4 text-primary border-gray-300 rounded"
-          />
-          <label htmlFor="isPublished" className="text-sm font-medium">
-            Publier le témoignage
-          </label>
-        </div>
-        <div className="flex space-x-4">
-          <Button type="submit" disabled={loading}>
-            {loading ? "En cours..." : isEditing !== null ? "Sauvegarder les Modifications" : "Ajouter le Témoignage"}
-          </Button>
-          {isEditing !== null && (
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => {
-                setIsEditing(null);
-                setFormData(initialFormData);
-              }}
-            >
-              Annuler
+    <div className="min-h-screen bg-gray-50 p-8">
+      <div className="max-w-6xl mx-auto">
+        <div className="flex justify-between items-center mb-8">
+          <h1 className="text-3xl font-bold text-primary">Gestion des Témoignages</h1>
+          {!isAdding && (
+            <Button onClick={handleAddNew} className="bg-accent hover:bg-accent/90">
+              <Plus size={20} className="mr-2" />
+              Ajouter un Témoignage
             </Button>
           )}
         </div>
-      </form>
 
-      <h2 className="text-2xl font-bold text-primary pt-8 border-t">Liste des Témoignages</h2>
-      {isLoading ? (
-        <p>Chargement des témoignages...</p>
-      ) : (
-        <div className="space-y-4">
-          {testimonials?.map((testimonial: NonNullable<typeof testimonials>[number]) => (
-            <div
-              key={testimonial.id}
-              className="p-4 border rounded-lg shadow-sm flex justify-between items-start bg-white"
-            >
-              <div className="flex-1 space-y-1">
-                <div className="flex items-center space-x-2">
-                  <h3 className="font-bold text-lg">{testimonial.clientName}</h3>
-                  <div className="flex">{renderStars(testimonial.rating || 5)}</div>
+        {/* Form */}
+        {isAdding && (
+          <div className="bg-white rounded-lg shadow-md p-6 mb-8">
+            <h2 className="text-xl font-bold mb-4">
+              {editingId ? "Modifier le Témoignage" : "Nouveau Témoignage"}
+            </h2>
+
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div className="grid md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium mb-1">Nom du Client *</label>
+                  <Input
+                    value={formData.clientName}
+                    onChange={(e) =>
+                      setFormData({ ...formData, clientName: e.target.value })
+                    }
+                    required
+                  />
                 </div>
-                <p className="text-sm text-gray-600 italic">"{testimonial.content}"</p>
-                <p className="text-xs text-gray-500">
-                  {testimonial.clientRole} - {testimonial.projectType}
-                </p>
-                <div className="flex items-center space-x-2 pt-2">
-                  {testimonial.isPublished ? (
-                    <span className="flex items-center text-green-600 text-xs font-medium">
-                      <Check size={14} className="mr-1" /> Publié
-                    </span>
-                  ) : (
-                    <span className="flex items-center text-red-600 text-xs font-medium">
-                      <X size={14} className="mr-1" /> Masqué
-                    </span>
-                  )}
+
+                <div>
+                  <label className="block text-sm font-medium mb-1">Rôle/Titre</label>
+                  <Input
+                    value={formData.clientRole}
+                    onChange={(e) =>
+                      setFormData({ ...formData, clientRole: e.target.value })
+                    }
+                    placeholder="ex: Propriétaire, Entrepreneur"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium mb-1">Type de Projet</label>
+                  <Input
+                    value={formData.projectType}
+                    onChange={(e) =>
+                      setFormData({ ...formData, projectType: e.target.value })
+                    }
+                    placeholder="ex: Aménagement combles"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium mb-1">Note (1-5)</label>
+                  <select
+                    value={formData.rating}
+                    onChange={(e) =>
+                      setFormData({ ...formData, rating: parseInt(e.target.value) })
+                    }
+                    className="w-full border border-border rounded px-3 py-2"
+                  >
+                    {[1, 2, 3, 4, 5].map((n) => (
+                      <option key={n} value={n}>
+                        {n} étoile{n > 1 ? "s" : ""}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium mb-1">Ordre d'affichage</label>
+                  <Input
+                    type="number"
+                    value={formData.order}
+                    onChange={(e) =>
+                      setFormData({ ...formData, order: parseInt(e.target.value) })
+                    }
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium mb-1">URL de la Photo</label>
+                  <Input
+                    value={formData.imageUrl}
+                    onChange={(e) =>
+                      setFormData({ ...formData, imageUrl: e.target.value })
+                    }
+                    placeholder="https://..."
+                  />
                 </div>
               </div>
-              <div className="flex space-x-2">
+
+              <div>
+                <label className="block text-sm font-medium mb-1">Contenu du Témoignage *</label>
+                <Textarea
+                  value={formData.content}
+                  onChange={(e) =>
+                    setFormData({ ...formData, content: e.target.value })
+                  }
+                  placeholder="Écrivez le témoignage ici..."
+                  rows={5}
+                  required
+                />
+              </div>
+
+              <div className="flex gap-2">
+                <Button type="submit" className="bg-primary hover:bg-primary/90">
+                  {editingId ? "Mettre à jour" : "Créer"}
+                </Button>
                 <Button
+                  type="button"
                   variant="outline"
-                  size="icon"
-                  onClick={() => handleEdit(testimonial)}
-                  title="Modifier"
+                  onClick={() => setIsAdding(false)}
                 >
-                  <Edit size={16} />
-                </Button>
-                <Button
-                  variant="destructive"
-                  size="icon"
-                  onClick={() => handleDelete(testimonial.id)}
-                  title="Supprimer"
-                >
-                  <Trash2 size={16} />
-                </Button>
-                <Button
-                  variant="secondary"
-                  size="icon"
-                  onClick={() => handleTogglePublished(testimonial.id, !testimonial.isPublished)}
-                  title={testimonial.isPublished ? "Masquer" : "Publier"}
-                >
-                  {testimonial.isPublished ? <EyeOff size={16} /> : <Eye size={16} />}
+                  Annuler
                 </Button>
               </div>
+            </form>
+          </div>
+        )}
+
+        {/* List */}
+        <div className="bg-white rounded-lg shadow-md overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead className="bg-gray-100 border-b">
+                <tr>
+                  <th className="px-6 py-3 text-left font-medium">Client</th>
+                  <th className="px-6 py-3 text-left font-medium">Projet</th>
+                  <th className="px-6 py-3 text-left font-medium">Contenu</th>
+                  <th className="px-6 py-3 text-left font-medium">Note</th>
+                  <th className="px-6 py-3 text-left font-medium">Statut</th>
+                  <th className="px-6 py-3 text-left font-medium">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {testimonials?.map((testimonial) => (
+                  <tr key={testimonial.id} className="border-b hover:bg-gray-50">
+                    <td className="px-6 py-3">
+                      <div>
+                        <p className="font-medium">{testimonial.clientName}</p>
+                        <p className="text-sm text-gray-500">{testimonial.clientRole}</p>
+                      </div>
+                    </td>
+                    <td className="px-6 py-3 text-sm">{testimonial.projectType}</td>
+                    <td className="px-6 py-3 text-sm max-w-xs truncate">
+                      {testimonial.content}
+                    </td>
+                    <td className="px-6 py-3 text-sm">{testimonial.rating}/5</td>
+                    <td className="px-6 py-3">
+                      <button
+                        onClick={() =>
+                          handleTogglePublished(testimonial.id, testimonial.isPublished)
+                        }
+                        className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-sm font-medium transition"
+                        style={{
+                          backgroundColor: testimonial.isPublished ? "#dcfce7" : "#fee2e2",
+                          color: testimonial.isPublished ? "#166534" : "#991b1b",
+                        }}
+                      >
+                        {testimonial.isPublished ? (
+                          <>
+                            <Eye size={14} /> Publié
+                          </>
+                        ) : (
+                          <>
+                            <EyeOff size={14} /> Brouillon
+                          </>
+                        )}
+                      </button>
+                    </td>
+                    <td className="px-6 py-3">
+                      <div className="flex gap-2">
+                        <button
+                          onClick={() => handleEdit(testimonial)}
+                          className="p-2 hover:bg-gray-100 rounded transition"
+                        >
+                          <Edit2 size={16} className="text-blue-600" />
+                        </button>
+                        <button
+                          onClick={() => handleDelete(testimonial.id)}
+                          className="p-2 hover:bg-gray-100 rounded transition"
+                        >
+                          <Trash2 size={16} className="text-red-600" />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          {!testimonials || testimonials.length === 0 ? (
+            <div className="text-center py-8 text-gray-500">
+              Aucun témoignage. Créez-en un pour commencer.
             </div>
-          ))}
+          ) : null}
         </div>
-      )}
+      </div>
     </div>
   );
 }
