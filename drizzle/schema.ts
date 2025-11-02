@@ -93,6 +93,22 @@ export const contactInfo = mysqlTable("contactInfo", {
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
 });
 
+// Extrait de drizzle/schema.ts
+export const testimonials = mysqlTable("testimonials", {
+  id: int("id").autoincrement().primaryKey(),
+  clientName: varchar("clientName", { length: 255 }).notNull(),
+  clientRole: varchar("clientRole", { length: 255 }),
+  projectType: varchar("projectType", { length: 255 }),
+  content: text("content").notNull(),
+  rating: int("rating").default(5),
+  imageUrl: varchar("imageUrl", { length: 512 }),
+  order: int("order").default(0),
+  isPublished: boolean("isPublished").default(true),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+
 export type Page = typeof pages.$inferSelect;
 export type InsertPage = typeof pages.$inferInsert;
 export type Service = typeof services.$inferSelect;
@@ -107,3 +123,5 @@ export type TeamMember = typeof teamMembers.$inferSelect;
 export type InsertTeamMember = typeof teamMembers.$inferInsert;
 export type ContactInfo = typeof contactInfo.$inferSelect;
 export type InsertContactInfo = typeof contactInfo.$inferInsert;
+export type Testimonial = typeof testimonials.$inferSelect;
+export type InsertTestimonial = typeof testimonials.$inferInsert;

@@ -1,7 +1,7 @@
 import { eq } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
 import mysql from "mysql2/promise";
-import { InsertUser, users, services, projects, contactInfo, projectImages, aboutContent, teamMembers, InsertService, InsertProject, InsertContactInfo, InsertProjectImage, InsertAboutContent, InsertTeamMember } from "../drizzle/schema";
+import { InsertUser, users, services, projects, contactInfo, projectImages, aboutContent, teamMembers, testimonials, InsertService, InsertProject, InsertContactInfo, InsertProjectImage, InsertAboutContent, InsertTeamMember, InsertTestimonial } from "../drizzle/schema";
 import { ENV } from './_core/env';
 import type { MySql2Database } from "drizzle-orm/mysql2";
 
@@ -274,6 +274,43 @@ export async function deleteTeamMember(id: number) {
   if (!db) throw new Error("Database not available");
   return db.delete(teamMembers).where(eq(teamMembers.id, id));
 }
+// Testimonials queries
+export async function getTestimonials() {
+  const db = await getDb();
+  if (!db) return [];
+  return db.select().from(testimonials).where(eq(testimonials.isPublished, true)).orderBy(asc(testimonials.order));
+}
+
+export async function getAllTestimonials() {
+  const db = await getDb();
+  if (!db) return [];
+  return db.select().from(testimonials).orderBy(asc(testimonials.order));
+}
+
+export async function createTestimonial(data: InsertTestimonial) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  const result = await db.insert(testimonials).values(data);
+  return result;
+}
+
+export async function updateTestimonial(id: number, data: Partial<InsertTestimonial>) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  return db.update(testimonials).set(data).where(eq(testimonials.id, id));
+}
+
+export async function deleteTestimonial(id: number) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  return db.delete(testimonials).where(eq(testimonials.id, id));
+}
+
+export async function toggleTestimonialPublished(id: number, isPublished: boolean) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  return db.update(testimonials).set({ isPublished }).where(eq(testimonials.id, id));
+}
 
 // Simple Auth User Functions
 export async function getUserByEmail(email: string) {
@@ -329,6 +366,53 @@ export async function updateUserPassword(userId: number, hashedPassword: string)
   }
 
   await db.update(users).set({ password: hashedPassword }).where(eq(users.id, userId));
+}
+
+///testimonials
+export async function getTestimonials() {
+  const db = await getDb();
+  if (!db) return [];
+  
+  return await db
+    .select()
+    .from(testimonials)
+    .where(eq(testimonials.isPublished, true))
+    .orderBy(asc(testimonials.displayOrder));
+}
+
+export async function getAllTestimonials() {
+  const db = await getDb();
+  if (!db) return [];
+  
+  return await db.select().from(testimonials).orderBy(asc(testimonials.displayOrder));
+}
+
+export async function createTestimonial(data: InsertTestimonial) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  await db.insert(testimonials).values(data);
+}
+
+export async function updateTestimonial(id: number, data: Partial<InsertTestimonial>) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  await db.update(testimonials).set(data).where(eq(testimonials.id, id));
+}
+
+export async function deleteTestimonial(id: number) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  await db.delete(testimonials).where(eq(testimonials.id, id));
+}
+
+export async function toggleTestimonialPublished(id: number, isPublished: boolean) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  await db.update(testimonials).set({ isPublished: isPublished ? 1 : 0 }).where(eq(testimonials.id, id));
 }
 
 

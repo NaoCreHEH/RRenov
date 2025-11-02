@@ -8,14 +8,14 @@
 
 ---
 
-## Powered by Manus
+## Powered by Erwin
 
 Votre site est construit avec les technologies les plus modernes :
 
 - **Frontend** : React 19 + TypeScript + Tailwind CSS 4 pour une interface réactive et élégante
 - **Backend** : Express.js + tRPC pour une API performante et type-safe
 - **Base de données** : MySQL avec Drizzle ORM pour une gestion robuste des données
-- **Authentification** : Manus OAuth pour un accès sécurisé à l'administration
+- **Authentification** : log mdp
 - **Déploiement** : Infrastructure auto-scaling avec CDN global pour une disponibilité maximale
 
 ---
@@ -44,7 +44,7 @@ Les clients peuvent vous contacter directement via le formulaire. Ils peuvent au
 ### Accès à l'Administration
 
 1. Allez sur `/admin` dans votre navigateur
-2. Connectez-vous avec votre compte Manus
+2. Connectez-vous avec votre compte
 3. Vous accédez au tableau de bord d'administration
 
 ### Gérer les Services
@@ -88,20 +88,15 @@ Les clients peuvent vous contacter directement via le formulaire. Ils peuvent au
 ### Système de Gestion de Contenu (CMS)
 Vous pouvez modifier tous les contenus du site sans connaître le code. L'interface est intuitive et facile à utiliser.
 
-### Authentification Sécurisée
-Seuls les administrateurs autorisés peuvent accéder à l'administration. Vos données sont protégées par Manus OAuth.
+
 
 ### Responsive Design
 Votre site s'adapte automatiquement à tous les appareils (ordinateur, tablette, téléphone).
 
 ### Préparation pour Devis Client
-Le site est prêt pour ajouter une fonctionnalité de connexion client pour consulter les devis. Contactez Manus pour cette évolution.
+Le site est prêt pour ajouter une fonctionnalité de connexion client pour consulter les devis.
 
 ---
-
-## Prochaines Étapes
-
-**Parlez à Manus AI anytime** pour demander des changements ou ajouter des fonctionnalités à votre site.
 
 ### Améliorations Recommandées
 

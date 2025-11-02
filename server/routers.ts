@@ -129,6 +129,70 @@ export const appRouter = router({
       return db.deleteTeamMember(input);
     }),
   }),
+    // Testimonials
+    testimonials: router({
+    list: publicProcedure.query(() => db.getTestimonials()),
+    listAll: protectedProcedure.query(async ({ ctx }) => {
+      if (ctx.user?.role !== "admin") {
+        throw new TRPCError({ code: "FORBIDDEN" });
+      }
+      return db.getAllTestimonials();
+    }),
+    create: protectedProcedure
+      .input(z.object({
+        clientName: z.string().min(1),
+        clientRole: z.string().optional(),
+        projectType: z.string().optional(),
+        content: z.string().min(10),
+        rating: z.number().min(1).max(5).default(5),
+        imageUrl: z.string().optional(),
+        order: z.number().default(0),
+      }))
+      .mutation(async ({ input, ctx }) => {
+        if (ctx.user?.role !== "admin") {
+          throw new TRPCError({ code: "FORBIDDEN" });
+        }
+        await db.createTestimonial(input);
+        return { success: true };
+      }),
+    update: protectedProcedure
+      .input(z.object({
+        id: z.number(),
+        clientName: z.string().optional(),
+        clientRole: z.string().optional(),
+        projectType: z.string().optional(),
+        content: z.string().optional(),
+        rating: z.number().min(1).max(5).optional(),
+        imageUrl: z.string().optional(),
+        order: z.number().optional(),
+      }))
+      .mutation(async ({ input, ctx }) => {
+        if (ctx.user?.role !== "admin") {
+          throw new TRPCError({ code: "FORBIDDEN" });
+        }
+        const { id, ...data } = input;
+        await db.updateTestimonial(id, data);
+        return { success: true };
+      }),
+    delete: protectedProcedure
+      .input(z.object({ id: z.number() }))
+      .mutation(async ({ input, ctx }) => {
+        if (ctx.user?.role !== "admin") {
+          throw new TRPCError({ code: "FORBIDDEN" });
+        }
+        await db.deleteTestimonial(input.id);
+        return { success: true };
+      }),
+    togglePublished: protectedProcedure
+      .input(z.object({ id: z.number(), isPublished: z.boolean() }))
+      .mutation(async ({ input, ctx }) => {
+        if (ctx.user?.role !== "admin") {
+          throw new TRPCError({ code: "FORBIDDEN" });
+        }
+        await db.toggleTestimonialPublished(input.id, input.isPublished);
+        return { success: true };
+      }),
+  }),
 });
 
 export type AppRouter = typeof appRouter;

@@ -9,7 +9,9 @@ import Services from "./pages/Services";
 import About from "./pages/About";
 import Projects from "./pages/Projects";
 import Contact from "./pages/Contact";
+import Testimonials from "./pages/Testimonials";
 import AdminDashboard from "./pages/admin/AdminDashboard";
+import AdminTestimonials from "./pages/admin/AdminTestimonials";
 import Login from "./pages/Login";
 
 function Router() {
@@ -21,8 +23,10 @@ function Router() {
       <Route path={"/about"} component={About} />
       <Route path={"/projects"} component={Projects} />
       <Route path={"/contact"} component={Contact} />
+      <Route path={"/testimonials"} component={Testimonials} />
       <Route path={"/login"} component={Login} />
       <Route path={"/admin"} component={AdminDashboard} />
+      <Route path={"/admin/testimonials"} component={AdminTestimonials} />
       <Route path={"/404"} component={NotFound} />
       {/* Final fallback route */}
       <Route component={NotFound} />
