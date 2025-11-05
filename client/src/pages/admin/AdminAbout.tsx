@@ -3,6 +3,7 @@ import { trpc } from "@/lib/trpc";
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
 import { Save, Edit2, Plus, Trash2 } from "lucide-react";
+import OptimizedImage from "@/components/OptimizedImage";
 
 export default function AdminAbout() {
   const { data: aboutContent, refetch: refetchAbout } = trpc.content.getAboutContent.useQuery();
@@ -275,10 +276,11 @@ export default function AdminAbout() {
                 <div className="flex justify-between items-start">
                   <div className="flex gap-4 flex-1">
                     {member.imageUrl && (
-                      <img
+                      <OptimizedImage
                         src={member.imageUrl}
                         alt={member.name}
                         className="w-24 h-24 rounded-lg object-cover"
+                        lazy
                       />
                     )}
                     <div className="flex-1">

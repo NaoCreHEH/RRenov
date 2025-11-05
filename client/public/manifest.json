@@ -1,0 +1,78 @@
+{
+  "name": "Rommelaere Rénov",
+  "short_name": "RRenov",
+  "description": "Spécialiste en aménagement de combles, Gyproc, enduit et retouche sur plafonnage",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "theme_color": "#1e3a8a",
+  "background_color": "#ffffff",
+  "categories": ["business", "services"],
+  "screenshots": [
+    {
+      "src": "/optimized/EDES.webp",
+      "sizes": "540x720",
+      "type": "image/webp",
+      "form_factor": "narrow"
+    },
+    {
+      "src": "/optimized/EDES.webp",
+      "sizes": "1280x720",
+      "type": "image/webp",
+      "form_factor": "wide"
+    }
+  ],
+  "icons": [
+    {
+      "src": "/logo-rr.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "/logo-rr.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Demander un devis",
+      "short_name": "Devis",
+      "description": "Demander un devis gratuit pour votre projet",
+      "url": "/contact",
+      "icons": [
+        {
+          "src": "/logo-rr.svg",
+          "sizes": "any",
+          "type": "image/svg+xml"
+        }
+      ]
+    },
+    {
+      "name": "Voir nos réalisations",
+      "short_name": "Réalisations",
+      "description": "Découvrez nos projets réalisés",
+      "url": "/projects",
+      "icons": [
+        {
+          "src": "/logo-rr.svg",
+          "sizes": "any",
+          "type": "image/svg+xml"
+        }
+      ]
+    }
+  ],
+  "share_target": {
+    "action": "/contact",
+    "method": "POST",
+    "enctype": "application/x-www-form-urlencoded",
+    "params": {
+      "title": "title",
+      "text": "text",
+      "url": "url"
+    }
+  }
+}

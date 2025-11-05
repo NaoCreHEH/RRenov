@@ -1,7 +1,8 @@
 import Navigation from "@/components/Navigation";
 import { Button } from "@/components/ui/button";
 import { Link } from "wouter";
-import SeoHelmet from "@/components/SeoHelmet"; 
+import SeoHelmet from "@/components/SeoHelmet_optimized"; 
+import OptimizedImage from "@/components/OptimizedImage";
 
 export default function About() {
   return (
@@ -62,10 +63,11 @@ export default function About() {
           <div className="bg-white rounded-lg overflow-hidden shadow-lg">
             <div className="grid md:grid-cols-2 gap-8 p-8">
               <div className="flex items-center justify-center">
-                <img
+                <OptimizedImage
                   src="/matthias.png"
                   alt="Matthias Rommelaere"
                   className="w-full h-auto rounded-lg object-cover"
+                  lazy
                 />
               </div>
               <div className="flex flex-col justify-center">

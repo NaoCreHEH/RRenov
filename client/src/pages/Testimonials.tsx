@@ -1,6 +1,7 @@
 import Navigation from "@/components/Navigation";
 import { trpc } from "@/lib/trpc";
 import { Star } from "lucide-react";
+import SeoHelmet from "@/components/SeoHelmet_optimized"; 
 
 export default function Testimonials() {
   const { data: testimonials, isLoading } = trpc.testimonials.list.useQuery();
@@ -17,6 +18,10 @@ export default function Testimonials() {
 
   return (
     <div className="min-h-screen flex flex-col bg-white">
+           <SeoHelmet // NOUVEAU
+              title="Spécialiste Aménagement de Combles et Rénovation"
+              description="Entrepreneur spécialisé en aménagement de combles, Gyproc, enduit et retouche sur plafonnage. Demandez votre devis gratuit."
+            />
       <Navigation />
 
       {/* Header */}

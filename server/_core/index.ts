@@ -9,6 +9,10 @@ import { appRouter } from "../routers";
 import { createContext } from "./contextSimple";
 import { serveStatic, setupVite } from "./vite";
 import mysql from "mysql2/promise";
+import { seoRouter, seoSecurityHeaders, httpsRedirect, imageCompressionHeaders } from "../seo-middleware";
+
+
+
 
 function isPortAvailable(port: number): Promise<boolean> {
   return new Promise(resolve => {
@@ -33,6 +37,15 @@ async function startServer() {
   const app = express();
   const server = createServer(app);
   // Configure body parser with larger size limit for file uploads
+
+    // Appliquer les middlewares
+  app.use(seoSecurityHeaders);
+  app.use(httpsRedirect);
+  app.use(imageCompressionHeaders);
+
+  // Routes SEO
+  app.use(seoRouter);
+
   app.use(express.json({ limit: "50mb" }));
   app.use(express.urlencoded({ limit: "50mb", extended: true }));
   app.use(cookieParser());

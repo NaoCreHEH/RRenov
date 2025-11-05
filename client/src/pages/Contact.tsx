@@ -4,7 +4,7 @@ import { trpc } from "@/lib/trpc";
 import { Phone, Mail, MapPin } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
-import SeoHelmet from "@/components/SeoHelmet"; 
+import SeoHelmet from "@/components/SeoHelmet_optimized"; 
 
 export default function Contact() {
   const { data: contactInfo } = trpc.content.getContactInfo.useQuery();

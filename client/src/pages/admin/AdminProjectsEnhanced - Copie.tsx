@@ -3,7 +3,7 @@ import { trpc } from "@/lib/trpc";
 import { useState } from "react";
 import { toast } from "sonner";
 import { Trash2, Edit2, Plus, Image as ImageIcon, X } from "lucide-react";
-
+import OptimizedImage from "@/components/OptimizedImage";
 export default function AdminProjectsEnhanced() {
   const { data: projects, refetch } = trpc.content.getProjects.useQuery();
   const createMutation = trpc.content.createProject.useMutation();
@@ -174,13 +174,14 @@ export default function AdminProjectsEnhanced() {
               images.map((img, index) => (
                 <div key={img.id} className="flex items-center gap-4 p-3 bg-gray-50 rounded-lg border border-border">
                   <span className="text-sm font-medium text-foreground/60">#{index + 1}</span>
-                  <img
+                  <OptimizedImage
                     src={img.imageUrl}
                     alt={`Image ${index + 1}`}
                     className="w-20 h-20 object-cover rounded"
                     onError={(e) => {
                       (e.target as HTMLImageElement).src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100'%3E%3Crect fill='%23ddd' width='100' height='100'/%3E%3Ctext x='50%25' y='50%25' text-anchor='middle' dy='.3em' fill='%23999'%3EImage%3C/text%3E%3C/svg%3E";
                     }}
+                    lazy
                   />
                   <span className="flex-1 text-sm text-foreground/80 truncate">{img.imageUrl}</span>
                   <Button

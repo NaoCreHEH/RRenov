@@ -1,14 +1,14 @@
 import Navigation from "@/components/Navigation";
 import { trpc } from "@/lib/trpc";
 import { Wrench } from "lucide-react";
-import SeoHelmet from "@/components/SeoHelmet"; 
+import SeoHelmet from "@/components/SeoHelmet_optimized"; 
 
 export default function Services() {
   const { data: services, isLoading } = trpc.content.getServices.useQuery();
 
   return (
     <div className="min-h-screen flex flex-col bg-white">
-         <SeoHelmet // NOUVEAU
+         <SeoHelmet 
         title="Spécialiste Aménagement de Combles et Rénovation"
         description="Entrepreneur spécialisé en aménagement de combles, Gyproc, enduit et retouche sur plafonnage. Demandez votre devis gratuit."
       />

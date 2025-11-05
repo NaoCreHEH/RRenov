@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { APP_LOGO, APP_TITLE } from "@/const";
 import { Menu, X, Settings } from "lucide-react";
 import { useState } from "react";
+import OptimizedImage from "./OptimizedImage";
 
 export default function Navigation() {
   const [isOpen, setIsOpen] = useState(false);
@@ -23,7 +24,7 @@ export default function Navigation() {
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2 no-underline">
           <div className="flex items-center gap-2">
-            {APP_LOGO && <img src={APP_LOGO} alt={APP_TITLE} className="h-10" />}
+            {APP_LOGO && <OptimizedImage src={APP_LOGO} alt={APP_TITLE} className="h-10" lazy />}
             <span className="font-bold text-xl text-primary hidden sm:inline">{APP_TITLE}</span>
           </div>
         </Link>

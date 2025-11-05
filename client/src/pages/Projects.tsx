@@ -1,7 +1,7 @@
 import Navigation from "@/components/Navigation";
 import ImageCarousel from "@/components/ImageCarousel";
 import { trpc } from "@/lib/trpc";
-import SeoHelmet from "@/components/SeoHelmet"; 
+import SeoHelmet from "@/components/SeoHelmet_optimized"; 
 
 export default function Projects() {
   const { data: projects, isLoading } = trpc.content.getProjects.useQuery();

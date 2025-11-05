@@ -3,7 +3,8 @@ import Navigation from "@/components/Navigation";
 import { Link } from "wouter";
 import { Phone, Mail, MapPin } from "lucide-react";
 import { trpc } from "@/lib/trpc";
-import SeoHelmet from "@/components/SeoHelmet"; 
+import SeoHelmet from "@/components/SeoHelmet_optimized"; 
+import OptimizedImage from "@/components/OptimizedImage";
 
 export default function Home() {
   const { data: contactInfo } = trpc.content.getContactInfo.useQuery();
@@ -11,7 +12,7 @@ export default function Home() {
 
   return (
     <div className="min-h-screen flex flex-col bg-white">
-         <SeoHelmet // NOUVEAU
+         <SeoHelmet
         title="Spécialiste Aménagement de Combles et Rénovation"
         description="Entrepreneur spécialisé en aménagement de combles, Gyproc, enduit et retouche sur plafonnage. Demandez votre devis gratuit."
       />
@@ -45,7 +46,7 @@ export default function Home() {
               </div>
             </div>
             <div className="hidden md:flex justify-center">
-              <img src="/image2vector.svg" alt="Rommelaere Rénov" className="w-64 h-64" />
+              <OptimizedImage src="/image2vector.svg" alt="Logo Rommelaere Rénov - Spécialiste Aménagement de Combles et Rénovation" className="w-64 h-64" lazy/>
             </div>
           </div>
         </div>

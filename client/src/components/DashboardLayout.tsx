@@ -26,7 +26,7 @@ import { CSSProperties, useEffect, useRef, useState } from "react";
 import { useLocation } from "wouter";
 import { DashboardLayoutSkeleton } from './DashboardLayoutSkeleton';
 import { Button } from "./ui/button";
-
+import OptimizedImage from "./OptimizedImage";  
 const menuItems = [
   { icon: LayoutDashboard, label: "Page 1", path: "/" },
   { icon: Users, label: "Page 2", path: "/some-path" },
@@ -63,10 +63,11 @@ export default function DashboardLayout({
           <div className="flex flex-col items-center gap-6">
             <div className="relative group">
               <div className="relative">
-                <img
+                <OptimizedImage
                   src={APP_LOGO}
                   alt={APP_TITLE}
                   className="h-20 w-20 rounded-xl object-cover shadow"
+                  lazy
                 />
               </div>
             </div>
@@ -172,10 +173,11 @@ function DashboardLayoutContent({
             <div className="flex items-center gap-3 pl-2 group-data-[collapsible=icon]:px-0 transition-all w-full">
               {isCollapsed ? (
                 <div className="relative h-8 w-8 shrink-0 group">
-                  <img
+                  <OptimizedImage
                     src={APP_LOGO}
                     className="h-8 w-8 rounded-md object-cover ring-1 ring-border"
                     alt="Logo"
+                    lazy
                   />
                   <button
                     onClick={toggleSidebar}
@@ -187,10 +189,11 @@ function DashboardLayoutContent({
               ) : (
                 <>
                   <div className="flex items-center gap-3 min-w-0">
-                    <img
+                    <OptimizedImage
                       src={APP_LOGO}
                       className="h-8 w-8 rounded-md object-cover ring-1 ring-border shrink-0"
                       alt="Logo"
+                      lazy
                     />
                     <span className="font-semibold tracking-tight truncate">
                       {APP_TITLE}

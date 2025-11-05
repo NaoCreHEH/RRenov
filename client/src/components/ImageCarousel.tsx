@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import OptimizedImage from "./OptimizedImage";  
 
 interface ImageCarouselProps {
   images: string[];
@@ -29,10 +30,11 @@ export default function ImageCarousel({ images, title }: ImageCarouselProps) {
     <div className="relative w-full bg-gray-900 rounded-lg overflow-hidden">
       {/* Image principale */}
       <div className="relative h-96 flex items-center justify-center bg-gray-100">
-        <img
+        <OptimizedImage
           src={images[currentIndex]}
           alt={`${title} - Photo ${currentIndex + 1}`}
           className="w-full h-full object-cover"
+          lazy
         />
       </div>
 
