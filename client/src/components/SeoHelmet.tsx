@@ -28,14 +28,14 @@ export default function SeoHelmet({
       <meta property="og:url" content={url} />
       <meta property="og:title" content={fullTitle} />
       <meta property="og:description" content={description} />
-      <meta property="og:image" content="/logo-rr.svg" /> }
+      <meta property="og:image" content="/logo-rr.svg" /> 
 
       {/* Twitter */}
       <meta property="twitter:card" content="summary_large_image" />
       <meta property="twitter:url" content={url} />
       <meta property="twitter:title" content={fullTitle} />
       <meta property="twitter:description" content={description} />
-      <meta property="twitter:image" content="/logo-rr.svg" /> }
+      <meta property="twitter:image" content="/logo-rr.svg" /> 
     </Helmet>
   );
 }
